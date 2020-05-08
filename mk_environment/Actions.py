@@ -3,7 +3,8 @@ from MAMEToolkit.emulator import Action
 
 
 # An enumerable class used to specify which actions can be used to interact with a game
-# Specifies the Lua engine port and field names required for performing an action
+# Specifies the Lua engine port and field names required for performing an action <-- 
+# @ from mameDEV example
 #  Reference for Mortal Kombat 1  Button Setup , thanks ^_^ 
 # http://mameaddicts.com/phpBB3/viewtopic.php?t=526
 class Actions(Enum):
