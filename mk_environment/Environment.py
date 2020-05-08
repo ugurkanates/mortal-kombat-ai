@@ -3,7 +3,6 @@ from MAMEToolkit.emulator import Address
 from .Steps import *
 from .Actions import Actions
 
-
 # Combines the data of multiple time steps
 def add_rewards(old_data, new_data):
     for k in old_data.keys():
@@ -27,7 +26,8 @@ def setup_memory_addresses():
 # Converts and index (action) into the relevant movement action Enum, depending on the player
 def index_to_move_action(action):
     return {
-        0: [Actions.P1_LEFT],
+        0: [Actions.
+        P1_LEFT],
         1: [Actions.P1_LEFT, Actions.P1_UP],
         2: [Actions.P1_UP],
         3: [Actions.P1_UP, Actions.P1_RIGHT],
@@ -42,32 +42,28 @@ def index_to_move_action(action):
 # Converts and index (action) into the relevant attack action Enum, depending on the player
 def index_to_attack_action(action):
     return {
-        0: [Actions.P1_JPUNCH],
-        1: [Actions.P1_SPUNCH],
-        2: [Actions.P1_FPUNCH],
-        3: [Actions.P1_JPUNCH, Actions.P1_SPUNCH],
-        4: [Actions.P1_SKICK],
-        5: [Actions.P1_FKICK],
-        6: [Actions.P1_RKICK],
-        7: [Actions.P1_SKICK, Actions.P1_FKICK],
-        8: [Actions.P1_JPUNCH, Actions.P1_SKICK],
-        9: []
+        0: [Actions.P1_HIGH_PUNCH],
+        1: [Actions.P1_LOW_PUNCH],
+        2: [Actions.P1_HIGH_KICK],
+        3: [Actions.P1_LOW_KICK],
+        4: [Actions.P1_BLOCK],
+        5: []
     }[action]
 
 
-# The Street Fighter specific interface for training an agent against the game
+# The Mortal Kombat specific interface for training an agent against the game
 class Environment(object):
 
     # env_id - the unique identifier of the emulator environment, used to create fifo pipes
     # difficulty - the difficult to be used in story mode gameplay
     # frame_ratio, frames_per_step - see Emulator class
     # render, throttle, debug - see Console class
-    def __init__(self, env_id, roms_path, difficulty=3, frame_ratio=3, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=False, binary_path=None):
+    def __init__(self, env_id, roms_path,game_id,difficulty=3, frame_ratio=60, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=True, binary_path=None):
         self.difficulty = difficulty
         self.frame_ratio = frame_ratio
         self.frames_per_step = frames_per_step
         self.throttle = throttle
-        self.emu = Emulator(env_id, roms_path, "sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, frame_skip=frame_skip, sound=sound, debug=debug, binary_path=binary_path)
+        self.emu = Emulator(env_id, roms_path,game_id, setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, frame_skip=frame_skip, sound=sound, debug=debug, binary_path=binary_path)
         self.started = False
         self.expected_health = {"P1": 0, "P2": 0}
         self.expected_wins = {"P1": 0, "P2": 0}
