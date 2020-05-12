@@ -2,6 +2,7 @@ from MAMEToolkit.emulator import Emulator
 from MAMEToolkit.emulator import Address
 from .Steps import *
 from .Actions import Actions
+from .Characters import *
 
 # Combines the data of multiple time steps
 def add_rewards(old_data, new_data):
@@ -58,7 +59,7 @@ class Environment(object):
     # difficulty - the difficult to be used in story mode gameplay
     # frame_ratio, frames_per_step - see Emulator class
     # render, throttle, debug - see Console class
-    def __init__(self, env_id, roms_path,game_id,difficulty=3, frame_ratio=60, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=True, binary_path=None):
+    def __init__(self, env_id, roms_path,game_id,difficulty=3, frame_ratio=60, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=True, binary_path=None,character=Characters.SCORPION):
         self.difficulty = difficulty
         self.frame_ratio = frame_ratio
         self.frames_per_step = frames_per_step
@@ -71,6 +72,7 @@ class Environment(object):
         self.stage_done = False
         self.game_done = False
         self.stage = 1
+        self.character = character
 
     # Runs a set of action steps over a series of time steps
     # Used for transitioning the emulator through non-learnable gameplay, aka. title screens, character selects
@@ -88,7 +90,7 @@ class Environment(object):
             for i in range(int(250/self.frame_ratio)):
                 self.emu.step([])
         self.run_steps(set_difficulty(self.frame_ratio, self.difficulty))
-        self.run_steps(start_game(self.frame_ratio))
+        self.run_steps(start_game(self.frame_ratio,s))
         frames = self.wait_for_fight_start()
         self.started = True
         return frames
