@@ -23,7 +23,6 @@ def setup_memory_addresses():
         "healthP2": Address('0x020691A2', 's16')
     }
 
-
 # Converts and index (action) into the relevant movement action Enum, depending on the player
 def index_to_move_action(action):
     return {
@@ -89,11 +88,11 @@ class Environment(object):
         if self.throttle:
             for i in range(int(250/self.frame_ratio)):
                 self.emu.step([])
-        self.run_steps(set_difficulty(self.frame_ratio, self.difficulty))
-        self.run_steps(start_game(self.frame_ratio,s))
-        frames = self.wait_for_fight_start()
+        #self.run_steps(set_difficulty(self.frame_ratio, self.difficulty))
+        self.run_steps(start_game(self.frame_ratio,self.character))
+        #frames = self.wait_for_fight_start()
         self.started = True
-        return frames
+        return True
 
     # Observes the game and waits for the fight to start
     def wait_for_fight_start(self):
