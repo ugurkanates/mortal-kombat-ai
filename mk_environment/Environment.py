@@ -3,6 +3,7 @@ from MAMEToolkit.emulator import Address
 from .Steps import *
 from .Actions import Actions
 from .Characters import *
+from .Image_Manipulation import *
 
 # Combines the data of multiple time steps
 def add_rewards(old_data, new_data):
@@ -90,17 +91,31 @@ class Environment(object):
                 self.emu.step([])
         #self.run_steps(set_difficulty(self.frame_ratio, self.difficulty))
         self.run_steps(start_game(self.frame_ratio,self.character))
-        #frames = self.wait_for_fight_start()
+        frames = self.wait_for_fight_start()
         self.started = True
+        print("DEBUG , fight started detected")
         return True
+    
+    # Gets input data frame from mame
+    # depending on selection of frames 1  or more for understanding motion
+    # we always get 0 index pic 
+    # returns False if frame didn't contain starting 99 or 98 timers
+    # True if it does
+    # @TODO error check -> data["frame"] = frames[0] if self.frames_per_step == 1 else frames
+    def is_timer_appear(self,picture):
+        cropped_img = crop_timer(picture[0])
+        if (rmsdiffe(crop_timer_img,cropped_img)) > 0.3 :
+            return True
+        else:
+            return False
 
     # Observes the game and waits for the fight to start
     def wait_for_fight_start(self):
         data = self.emu.step([])
-        while data["fighting"] == 0:
+        while self.is_timer_appear(data["frame"]):
             data = self.emu.step([])
-        self.expected_health = {"P1": data["healthP1"], "P2": data["healthP2"]}
-        data = self.gather_frames([])
+        #self.expected_health = {"P1": data["healthP1"], "P2": data["healthP2"]}
+        #data = self.gather_frames([])
         return data["frame"]
 
     def reset(self):
