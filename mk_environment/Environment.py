@@ -58,7 +58,7 @@ class Environment(object):
     # difficulty - the difficult to be used in story mode gameplay
     # frame_ratio, frames_per_step - see Emulator class
     # render, throttle, debug - see Console class
-    def __init__(self, env_id, roms_path,game_id,difficulty=3, frame_ratio=60, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=True, binary_path=None,character=Characters.SCORPION):
+    def __init__(self, env_id, roms_path,game_id,difficulty=3, frame_ratio=60, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=True, binary_path=None,character=Characters.SCORPION.value):
         self.difficulty = difficulty
         self.frame_ratio = frame_ratio
         self.frames_per_step = frames_per_step

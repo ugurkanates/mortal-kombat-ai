@@ -41,18 +41,17 @@ def set_difficulty(frame_ratio, difficulty):
     return steps
 
 def select_character(character,frame_ratio):
-    if character == Characters.SCORPION:
+    if character == Characters.SCORPION.value:
         returner = [{"wait": int(80/frame_ratio), "actions": [Actions.P1_RIGHT]},
                    {"wait": int(80/frame_ratio), "actions": [Actions.P1_DOWN]}]
-    elif character == Characters.JOHNNY:
-        returner = {"wait": int(80/frame_ratio), "actions": [Actions.P1_LEFT]}
-    elif character == Characters.RAIDEN:
-        returner = {"wait": int(80/frame_ratio), "actions": [Actions.P1_DOWN]}
-    elif character == Characters.LIUKANG:
+    elif character == Characters.JOHNNY.value:
+        returner = [{"wait": int(80/frame_ratio), "actions": [Actions.P1_LEFT]}]
+    elif character == Characters.RAIDEN.value:
+        returner = [{"wait": int(80/frame_ratio), "actions": [Actions.P1_DOWN]}]
+    elif character == Characters.LIUKANG.value:
         returner = [{"wait": int(80/frame_ratio), "actions": [Actions.P1_DOWN]},
                    {"wait": int(80/frame_ratio), "actions": [Actions.P1_RIGHT]}]
-
-    elif character == Characters.SONYA:
+    elif character == Characters.SONYA.value:
         returner = [{"wait": int(80/frame_ratio), "actions": [Actions.P1_RIGHT]},
                    {"wait": int(80/frame_ratio), "actions": [Actions.P1_RIGHT]}]
 
