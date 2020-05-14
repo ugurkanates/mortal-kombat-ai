@@ -13,8 +13,7 @@ crop_timer_img = crop_timer_img.convert("RGB")
 # if fight started etc
 
 def crop_timer(imge):
-    imge = Image.fromarray(imge)
-    print(img)
+    imge = Image.fromarray(imge,mode="RGB")
     imge = imge.crop(timer)
     return imge
 
@@ -26,6 +25,6 @@ def crop_timer(imge):
 
 def rmsdiffe(im1, im2):
     """Calculates the root mean square error (RSME) between two images"""
-    print(im1 , im2)
+    #print(im1 , im2)
     errors = np.asarray(ImageChops.difference(im1, im2)) / 255
     return math.sqrt(np.mean(np.square(errors)))

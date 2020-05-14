@@ -103,8 +103,8 @@ class Environment(object):
     # True if it does
     # @TODO error check -> data["frame"] = frames[0] if self.frames_per_step == 1 else frames
     def is_timer_appear(self,picture):
-        cropped_img = crop_timer(picture[0])
-        if (rmsdiffe(crop_timer_img,cropped_img)) > 0.3 :
+        cropped_img = crop_timer(picture)#[0])
+        if (rmsdiffe(crop_timer_img,cropped_img)) > 0.25 :
             return True
         else:
             return False
