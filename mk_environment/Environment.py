@@ -66,13 +66,19 @@ class Environment(object):
         self.throttle = throttle
         self.emu = Emulator(env_id, roms_path,game_id, setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, frame_skip=frame_skip, sound=sound, debug=debug, binary_path=binary_path)
         self.started = False
-        self.expected_health = {"P1": 0, "P2": 0}
-        self.expected_wins = {"P1": 0, "P2": 0}
+        self.previous_health = {"P1": 0, "P2": 0} # difference between preHP and currentHP is
+        self.previous_wins = {"P1": 0, "P2": 0}
         self.round_done = False
         self.stage_done = False
         self.game_done = False
         self.stage = 1
         self.character = character
+        self.fullHP_p1 = Image.new(size=(0,0),mode="RGB")
+        self.fullHP_p2 = Image.new(size=(0,0),mode="RGB")
+
+
+
+
 
     # Runs a set of action steps over a series of time steps
     # Used for transitioning the emulator through non-learnable gameplay, aka. title screens, character selects
@@ -93,6 +99,8 @@ class Environment(object):
         self.run_steps(start_game(self.frame_ratio,self.character))
         frames = self.wait_for_fight_start()
         self.started = True
+        self.fullHP_p1 = get_health_bar(frames,1)
+        self.fullHP_p2 = get_health_bar(frames,2)
         print("DEBUG , fight started detected")
         return True
     
@@ -114,7 +122,7 @@ class Environment(object):
         data = self.emu.step([])
         while self.is_timer_appear(data["frame"]):
             data = self.emu.step([])
-        #self.expected_health = {"P1": data["healthP1"], "P2": data["healthP2"]}
+        self.expected_health = {"P1": 1.0, "P2": 1.0}
         #data = self.gather_frames([])
         return data["frame"]
 
@@ -200,10 +208,10 @@ class Environment(object):
     # Takes the data returned from the step and updates book keeping variables
     def sub_step(self, actions):
         data = self.emu.step([action.value for action in actions])
-
-        p1_diff = (self.expected_health["P1"] - data["healthP1"])
-        p2_diff = (self.expected_health["P2"] - data["healthP2"])
-        self.expected_health = {"P1": data["healthP1"], "P2": data["healthP2"]}
+        current_health = health_calculation(data["frame"],self.fullHP_p1,self.fullHP_p2)
+        p1_diff = (self.previous_health["P1"] - current_health["P1"])
+        p2_diff = (self.previous_health["P2"] - current_health["P2"])
+        self.previous_health = {"P1": current_health["healthP1"], "P2": current_health["healthP2"]}
 
         rewards = {
             "P1": (p2_diff-p1_diff),

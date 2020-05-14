@@ -28,3 +28,31 @@ def rmsdiffe(im1, im2):
     #print(im1 , im2)
     errors = np.asarray(ImageChops.difference(im1, im2)) / 255
     return math.sqrt(np.mean(np.square(errors)))
+
+# integer argument , gets of health bar of p1 or p2 1,2 arguments
+
+def get_health_bar(frame,which):
+    if which == 1 :
+        imge = Image.fromarray(frame,mode="RGB")
+        return imge.crop(P1_health_box)
+    elif which == 2 :
+        imge = Image.fromarray(frame,mode="RGB")
+        return imge.crop(P2_health_box)
+    else:
+        print("big ERROR HEALTH BAR wrong argm")
+        return 0
+
+def health_calculation(frame,p1,p2):
+   
+    part_p1 = get_health_bar(frame,1)
+    part_p2 = get_health_bar(frame,2)
+    part_p1.show()
+    p1.show()
+    #x = 1-rmsdiffe
+    fe = Image.fromarray(np.asarray(part_p1)-np.asarray(p1)) #,p1) #  full hp  - current HP diff 0.25 diff means you are %75 health
+    fe.show()
+    #y = 1-rmsdiffe(Image.fromarray(np.asarray(part_p2)-np.asarray(p2)),p2)
+    x=y=1
+    return {"P1":x,"P2":y}
+
+
