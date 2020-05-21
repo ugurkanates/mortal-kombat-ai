@@ -5,6 +5,9 @@ from .Actions import Actions
 from .Characters import *
 from .Image_Manipulation import *
 
+ROUND_BONUS = 15
+STAGE_BONUS = 50
+GAME_END_BONUS = 100
 # Combines the data of multiple time steps
 def add_rewards(old_data, new_data):
     for k in old_data.keys():
@@ -13,15 +16,18 @@ def add_rewards(old_data, new_data):
                 new_data[k][player] += old_data[k][player]
     return new_data
 
+def add_rewards_constant(data,amount):
+    for k in data.keys():
+        if "rewards" in k:
+            for player in data[k]:
+                data[k][player] += amount
+    return data
 
-# Returns the list of memory addresses required to train on Street Fighter
+
+# not used , here for not breaking legacy code.
 def setup_memory_addresses():
     return {
-        "fighting": Address('0x02011389', 'u8'),
-        "winsP1": Address('0x02011383', 'u8'),
-        "winsP2": Address('0x02011385', 'u8'),
-        "healthP1": Address('0x02068D0A', 's16'),
-        "healthP2": Address('0x020691A2', 's16')
+        "fighting": Address('0x02011389', 'u8')
     }
 
 # Converts and index (action) into the relevant movement action Enum, depending on the player
@@ -75,7 +81,7 @@ class Environment(object):
         self.character = character
         self.fullHP_p1 = Image.new(size=(0,0),mode="RGB")
         self.fullHP_p2 = Image.new(size=(0,0),mode="RGB")
-
+        self.active_round = 0
 
 
 
@@ -101,6 +107,7 @@ class Environment(object):
         self.started = True
         self.fullHP_p1 = get_health_bar(frames,1)
         self.fullHP_p2 = get_health_bar(frames,2)
+        self.active_round = 1
         print("DEBUG , fight started detected")
         return True
     
@@ -184,14 +191,58 @@ class Environment(object):
 
     # Checks whether the round or game has finished
     def check_done(self, data):
-        if data["fighting"] == 0:
-            data = self.run_till_victor(data)
-            self.round_done = True
-            if data["winsP1"] == 2:
-                self.stage_done = True
-                self.stage += 1
-            if data["winsP2"] == 2:
-                self.game_done = True
+        # data["fighting"] =  kim kazandigini dondur p1 p2 countlara baakarak ve a little logic
+        #  oyun bitince next stage kadar zaten oburu gorene kdr bekler
+        # kaybedincede karakter sec oburunu goree kdr bekler same shit
+        status,whoWin = checkRoundDone(data["frame"][0],self.active_round)
+        if self.active_round == 1:
+            if status == True :   # active_round completed 
+                if whoWin == 1 :
+                    self.previous_wins["P1"] += 1
+                elif whoWin == 2 :
+                    self.previous_wins["P2"] += 1
+                self.active_round += 1
+        
+        elif self.active_round == 2:
+            if status == True :   # active_round completed 
+                if whoWin == 1 :
+                    self.previous_wins["P1"] += 1
+                elif whoWin == 2 :
+                    self.previous_wins["P2"] += 1
+                self.active_round += 1
+
+        
+        elif self.active_round == 3:
+            if status == True :   # active_round completed 
+                if whoWin == 1 :
+                    self.previous_wins["P1"] += 1
+                elif whoWin == 2 :
+                    self.previous_wins["P2"] += 1
+        
+        # If current round is done get rewards pos/negatve 
+        if status and (self.previous_wins["P1"] == 1 or self.previous_health["P2"] == 1):
+            if whoWin == 1:
+                data = add_rewards_constant(data,ROUND_BONUS)
+            elif whoWin == 2:
+                data = add_rewards_constant(data,-ROUND_BONUS)
+        elif status and (self.previous_wins["P1"] == 2 or self.previous_health["P2"] == 2):
+            if whoWin == 1:
+                data = add_rewards_constant(data,self.stage*STAGE_BONUS)
+            elif whoWin == 2:
+                data = add_rewards_constant(data,-self.stage*STAGE_BONUS)
+
+        # Game / Round / Stage done checks
+        if (self.previous_wins["P1"] == 1 or self.previous_wins["P2"] == 1) and status :
+            self.round_done = True         
+
+        elif self.previous_wins["P1"] == 2:
+            self.stage_done = True
+            self.stage += 1
+            # bu round done related to r not this.? spesific handle.self.round_done = True
+        elif self.previous_wins["P2"] == 2:
+            self.game_done = True
+        
+    
         return data
 
     # Collects the specified amount of frames the agent requires before choosing an action
@@ -211,7 +262,7 @@ class Environment(object):
         current_health = health_calculation(data["frame"],self.fullHP_p1,self.fullHP_p2)
         p1_diff = (self.previous_health["P1"] - current_health["P1"])
         p2_diff = (self.previous_health["P2"] - current_health["P2"])
-        print(current_health)
+        #print(current_health)
         self.previous_health = {"P1": current_health["P1"], "P2": current_health["P2"]}
 
         rewards = {
@@ -236,6 +287,7 @@ class Environment(object):
                 raise EnvironmentError("Attempted to step while characters are not fighting")
         else:
             raise EnvironmentError("Start must be called before stepping")
+
 
     # Safely closes emulator
     def close(self):
