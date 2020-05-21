@@ -12,7 +12,7 @@ crop_timer_img = (Image.open(path+"/assets/timer.png"))
 crop_timer_img = crop_timer_img.convert("RGB")
 win_icon = (Image.open(path+"/assets/win_icon.png"))
 win_icon_img = win_icon.convert("RGB")
-win_icon_sim_ratio = 0.415
+win_icon_sim_ratio = 0.35
 P1_LEFT = (25, 45, 35, 55)
 P1_RIGHT = (35, 45, 45, 55)
 P2_LEFT = (350, 45, 360, 55)
@@ -42,6 +42,16 @@ def rmsdiffe(im1, im2):
     errors = np.asarray(ImageChops.difference(im1, im2)) / 255
     return math.sqrt(np.mean(np.square(errors)))
 
+def rmsdiffer(liste):
+    """Calculates the root mean square error (RSME) between two images"""
+    # print(im1 , im2)
+    # im1.show()
+    # im2.show()
+    errors = np.asarray(ImageChops.difference(liste[0], liste[1])) / 255
+    x=  math.sqrt(np.mean(np.square(errors)))
+    #print(x)
+    return x
+
 # integer argument , gets of health bar of p1 or p2 1,2 arguments
 
 
@@ -55,8 +65,11 @@ def get_health_bar(frame, which):
     else:
         print("big ERROR HEALTH BAR wrong argm")
         return 0
-
-
+# PIL image input and output
+def imgRemoveUtil(img1,img2):
+    re1 = Image.fromarray(np.asarray(img1)- np.asarray(img1)) 
+    re2 = Image.fromarray(np.asarray(img1)-np.asarray(img2))
+    return re1,re2
 def health_calculation(frame, p1, p2):
 
     # Full Image to check on
@@ -85,40 +98,48 @@ def checkRoundDone(frame, currentRound):
      whoWin = -1
      if currentRound == 1:
         # Left L  - Right R
-        if rmsdiffe(P1_L, win_icon_img) < win_icon_sim_ratio:
-             P1_L.save("ucan.png")
-             win_icon_img.save("hadi.png")
+        if rmsdiffer(imgRemoveUtil(P1_L, win_icon_img)) < win_icon_sim_ratio:
+             #P1_L.save("ucan.png")
+             #win_icon_img.save("hadi.png")
              print("Left Round 1 Won")
              status = True
              whoWin = 1
-        elif rmsdiffe(P1_R,win_icon_img) < win_icon_sim_ratio:
+        elif rmsdiffer(imgRemoveUtil(P2_R,win_icon_img)) < win_icon_sim_ratio:
             print("Right Round 1 Won")
             status = True
             whoWin = 2
-        else:
-            print("none?")
+        #else:
+         #   print("none?")
      elif currentRound == 2:
          # Left Win yaparsa stage_done  or beraber
          # Right win yaparsa either beraber or game done
          # LL bakmak lazim round1i kaybettiysek
          # LR bakmak lazim round1'i kazandiysak
          # RL , RR again.
-
-        if rmsdiffe(P1_L,win_icon_img) < win_icon_sim_ratio or rmsdiffe(P1_R,win_icon_img) < win_icon_sim_ratio:
+         # 1- LR -RL durumunda whoWin 3 yolla disarda kontrol etsin
+         # diger grumlar aynı
+        if (rmsdiffer(imgRemoveUtil(P1_L,win_icon_img)) < win_icon_sim_ratio and \
+            rmsdiffer(imgRemoveUtil(P2_R,win_icon_img)) < win_icon_sim_ratio  ):
+            status = True
+            whoWin = 3
+        elif rmsdiffe(P1_R,win_icon_img) < win_icon_sim_ratio:     
             print("Left side won somehow.")
             status = True
             whoWin = 1
-        elif rmsdiffe(P2_R,win_icon_img) < win_icon_sim_ratio or rmsdiffe(P2_L,win_icon_img) < win_icon_sim_ratio:
+        elif rmsdiffe(P2_L,win_icon_img) < win_icon_sim_ratio:
             print("Right side won somehow.")
             status = True
             whoWin = 2
-
+        elif rmsdiffe(P1_L, win_icon_img) < win_icon_sim_ratio:
+             print("Left Round AQ Won")
+        elif rmsdiffe(P2_R,win_icon_img) < win_icon_sim_ratio:
+            print("Right Round AQ Won")
      elif currentRound == 3:
          # Check LR  and RL
-        if rmsdiffe(P1_R,win_icon_img) < win_icon_sim_ratio:
+        if rmsdiffer(imgRemoveUtil(P1_R,win_icon_img)) < win_icon_sim_ratio:
             status = True
             whoWin = 1
-        elif rmsdiffe(P2_L,win_icon_img) <win_icon_sim_ratio:
+        elif rmsdiffer(imgRemoveUtil(P2_L,win_icon_img)) <win_icon_sim_ratio:
             status = True
             whoWin = 2
      return status,whoWin

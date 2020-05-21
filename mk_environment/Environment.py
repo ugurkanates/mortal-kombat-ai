@@ -83,7 +83,11 @@ class Environment(object):
         self.fullHP_p2 = Image.new(size=(0,0),mode="RGB")
         self.active_round = 0
 
-
+    def startAfterFail(self):
+        self.run_steps({"wait": int(10/self.frame_ratio), "actions": [Actions.COIN_P1]})
+        frames = self.wait_for_fight_start()
+        self.active_round = 1
+        print("DEBUG , fight started detected")
 
 
     # Runs a set of action steps over a series of time steps
@@ -119,7 +123,7 @@ class Environment(object):
     # @TODO error check -> data["frame"] = frames[0] if self.frames_per_step == 1 else frames
     def is_timer_appear(self,picture):
         cropped_img = crop_timer(picture)#[0])
-        if (rmsdiffe(crop_timer_img,cropped_img)) > 0.25 :
+        if (rmsdiffer(imgRemoveUtil(crop_timer_img,cropped_img))) > 0.25 :
             return True
         else:
             return False
@@ -209,6 +213,11 @@ class Environment(object):
                     self.previous_wins["P1"] += 1
                 elif whoWin == 2 :
                     self.previous_wins["P2"] += 1
+                elif whoWin == 3:
+                    if self.previous_wins["P1"] == 1:
+                        self.previous_wins["P2"] = 1
+                    else:
+                        self.previous_health["P1"] = 1
                 self.active_round += 1
 
         
@@ -232,7 +241,7 @@ class Environment(object):
                 data = add_rewards_constant(data,-self.stage*STAGE_BONUS)
 
         # Game / Round / Stage done checks
-        if (self.previous_wins["P1"] == 1 or self.previous_wins["P2"] == 1) and status :
+        if (self.previous_wins["P1"] == 1 or self.previous_wins["P2"] == 1.0) and status :
             self.round_done = True         
 
         elif self.previous_wins["P1"] == 2:
