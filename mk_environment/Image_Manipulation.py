@@ -26,6 +26,8 @@ def crop_timer(imge):
 def rmsdiffe(im1, im2):
     """Calculates the root mean square error (RSME) between two images"""
     #print(im1 , im2)
+    #im1.show()
+    #im2.show()
     errors = np.asarray(ImageChops.difference(im1, im2)) / 255
     return math.sqrt(np.mean(np.square(errors)))
 
@@ -44,15 +46,17 @@ def get_health_bar(frame,which):
 
 def health_calculation(frame,p1,p2):
    
-    part_p1 = get_health_bar(frame,1)
+    p1_full = Image.fromarray(np.asarray(p1)-np.asarray(p1)) # Full Image to check on
+    p2_full = Image.fromarray(np.asarray(p2)-np.asarray(p2)) # Full Image to check on
+
+    part_p1 = get_health_bar(frame,1) 
+    part_p1 = Image.fromarray(np.asarray(p1)-np.asarray(part_p1))
+
     part_p2 = get_health_bar(frame,2)
-    part_p1.show()
-    p1.show()
-    #x = 1-rmsdiffe
-    fe = Image.fromarray(np.asarray(part_p1)-np.asarray(p1)) #,p1) #  full hp  - current HP diff 0.25 diff means you are %75 health
-    fe.show()
-    #y = 1-rmsdiffe(Image.fromarray(np.asarray(part_p2)-np.asarray(p2)),p2)
-    x=y=1
+    part_p2 = Image.fromarray(np.asarray(p2)-np.asarray(part_p2))
+
+    x = 1 - rmsdiffe(p1_full,part_p1)
+    y = 1-  rmsdiffe(p2_full,part_p2)
     return {"P1":x,"P2":y}
 
 

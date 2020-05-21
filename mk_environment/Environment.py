@@ -211,7 +211,8 @@ class Environment(object):
         current_health = health_calculation(data["frame"],self.fullHP_p1,self.fullHP_p2)
         p1_diff = (self.previous_health["P1"] - current_health["P1"])
         p2_diff = (self.previous_health["P2"] - current_health["P2"])
-        self.previous_health = {"P1": current_health["healthP1"], "P2": current_health["healthP2"]}
+        print(current_health)
+        self.previous_health = {"P1": current_health["P1"], "P2": current_health["P2"]}
 
         rewards = {
             "P1": (p2_diff-p1_diff),
