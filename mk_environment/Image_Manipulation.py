@@ -120,20 +120,20 @@ def checkRoundDone(frame, currentRound):
          # diger grumlar aynı
         if (rmsdiffer(imgRemoveUtil(P1_L,win_icon_img)) < win_icon_sim_ratio and \
             rmsdiffer(imgRemoveUtil(P2_R,win_icon_img)) < win_icon_sim_ratio  ):
+            print("WHAfaknigger")
             status = True
             whoWin = 3
         elif rmsdiffe(P1_R,win_icon_img) < win_icon_sim_ratio:     
             print("Left side won somehow.")
+            print(rmsdiffe(P1_R,win_icon_img))
+            P1_R.show()
             status = True
             whoWin = 1
         elif rmsdiffe(P2_L,win_icon_img) < win_icon_sim_ratio:
             print("Right side won somehow.")
             status = True
             whoWin = 2
-        elif rmsdiffe(P1_L, win_icon_img) < win_icon_sim_ratio:
-             print("Left Round AQ Won")
-        elif rmsdiffe(P2_R,win_icon_img) < win_icon_sim_ratio:
-            print("Right Round AQ Won")
+
      elif currentRound == 3:
          # Check LR  and RL
         if rmsdiffer(imgRemoveUtil(P1_R,win_icon_img)) < win_icon_sim_ratio:

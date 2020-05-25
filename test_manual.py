@@ -12,11 +12,13 @@ for i in range(1000):
     result = env.step(1,1)
     if result[2] == True:
         env.round_done = False
+        print("Round done? doubt")
         env.wait_for_fight_start()
     elif result[3] == True:
         print("aq")
     elif result[4] == True:
         env.game_done = False
+        print("Game lost, restarting it.")
         env.startAfterFail()
     #print(x[2],x[4],x[4])
 #run_cheat_debugger(roms_path, game_id,binary_path="/home/paypaytr/Desktop/ReinforcementLearning/mame_compile/mame/mamearcade64")

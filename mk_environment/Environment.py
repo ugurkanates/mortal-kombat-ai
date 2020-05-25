@@ -84,9 +84,11 @@ class Environment(object):
         self.active_round = 0
 
     def startAfterFail(self):
-        self.run_steps({"wait": int(10/self.frame_ratio), "actions": [Actions.COIN_P1]})
+        #self.run_steps({"wait": int(10/self.frame_ratio), "actions": [Actions.COIN_P1]})
+        self.run_steps(new_game(self.frame_ratio,self.character))
         frames = self.wait_for_fight_start()
         self.active_round = 1
+        self.previous_wins = {"P1": 0, "P2": 0}
         print("DEBUG , fight started detected")
 
 
@@ -167,7 +169,7 @@ class Environment(object):
 
     def new_game(self):
         self.wait_for_continue()
-        self.run_steps(new_game(self.frame_ratio))
+        self.run_steps(new_game(self.frame_ratio,self.character))
         self.expected_health = {"P1": 0, "P2": 0}
         self.expected_wins = {"P1": 0, "P2": 0}
         self.round_done = False

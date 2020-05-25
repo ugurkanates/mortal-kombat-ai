@@ -80,13 +80,13 @@ def next_stage(frame_ratio):
             [{"wait": int(60/frame_ratio), "actions": [Actions.P1_JPUNCH]}]
 
 
-def new_game(frame_ratio):
-    return [{"wait": 0, "actions": [Actions.SERVICE]},
-              {"wait": int(30 / frame_ratio), "actions": [Actions.P1_UP]},
-              {"wait": int(30 / frame_ratio), "actions": [Actions.P1_JPUNCH]},
-              {"wait": int(300 / frame_ratio), "actions": [Actions.COIN_P1]},
-              {"wait": int(10 / frame_ratio), "actions": [Actions.COIN_P1]},
-              {"wait": int(60 / frame_ratio), "actions": [Actions.P1_START]},
-              {"wait": int(80 / frame_ratio), "actions": [Actions.P1_LEFT, Actions.P1_JPUNCH]},
-              {"wait": int(60 / frame_ratio), "actions": [Actions.P1_JPUNCH]},
-              {"wait": int(60 / frame_ratio), "actions": [Actions.P1_JPUNCH]}]
+def new_game(frame_ratio,character):
+    ACTION_CHOSEN = select_character(character,frame_ratio)
+    first_part =  [ 
+              {"wait": int(300), "actions": [Actions.P1_BLOCK]},
+              {"wait": int(10/frame_ratio), "actions": [Actions.COIN_P1]},
+              {"wait": int(10 / frame_ratio), "actions": [Actions.P1_START]}]
+    first_part += ACTION_CHOSEN
+    second_part = [{"wait": int(30 / frame_ratio), "actions": [Actions.P1_HIGH_PUNCH]}]
+    first_part += second_part
+    return first_part
