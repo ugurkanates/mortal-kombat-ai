@@ -200,7 +200,7 @@ class Environment(object):
         # data["fighting"] =  kim kazandigini dondur p1 p2 countlara baakarak ve a little logic
         #  oyun bitince next stage kadar zaten oburu gorene kdr bekler
         # kaybedincede karakter sec oburunu goree kdr bekler same shit
-        status,whoWin = checkRoundDone(data["frame"][0],self.active_round)
+        status,whoWin = checkRoundDone(data["frame"],self.active_round)
         if self.active_round == 1:
             if status == True :   # active_round completed 
                 if whoWin == 1 :

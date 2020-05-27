@@ -4,7 +4,7 @@ from PIL import Image
 
 roms_path = "roms"  # Replace this with the path to your ROMs
 game_id = "mk"
-shoots_folder = "screens3/"
+shoots_folder = "screens4/"
 env = Environment("env1", roms_path,game_id,throttle=True,frame_ratio=1)
 P1_dim = (20,30,182,40)
 
